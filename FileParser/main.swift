@@ -81,13 +81,36 @@ struct Mode {
         var jobsNumbers = dataResultInts[0]
         var jobsModules = dataResultInts[1]
         
+        var jobsText =      "JOBS:       "
+        var modesText =     "MODES:      "
+        var durationsText = "DURATIONS:  "
+        
+        for jobsNumber in jobsNumbers {
+            jobsText += "\(jobsNumber)  "
+        }
+        jobsText += "\n"
+        
+        for (i, jobsModule) in jobsModules.enumerated() {
+            modesText += String(repeating: " ", count: String(describing: jobsNumbers[i]).characters.count - 1) + "\(jobsModule)  "
+        }
+        modesText += "\n"
+        
         for (i, _) in jobsNumbers.enumerated() {
             var job = jobs[jobsNumbers[i]]
             if jobsModules[i] == 0 {
-                print("0 ")
+                durationsText += "0  "
             } else {
-                print("\(job.modes[jobsModules[i] - 1].duration) ")
+                durationsText +=  String(repeating: " ", count: String(describing: jobsNumbers[i]).characters.count - 1) + "\(job.modes[jobsModules[i] - 1].duration)  "
             }
+        }
+        
+        let resultText = jobsText + modesText + durationsText
+    
+        do {
+            try resultText.write(toFile: "/Users/mk/FileParser/results.txt", atomically: false, encoding: .utf8)
+        }
+        catch let error {
+            print(error)
         }
         
     } catch {
