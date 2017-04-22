@@ -70,7 +70,25 @@ struct Mode {
             }
         }
         
-        print(jobs)
+        let resultData = try String(contentsOfFile: "/Users/mk/FileParser/j10/j102_2.sa", encoding: .utf8)
+        let resultLines = resultData.components(separatedBy: .newlines)
+        
+        var dataResultInts = resultLines
+            .map { $0.components(separatedBy: " ") }
+            .map { $0.flatMap { Int( $0.trimmingCharacters(in: .whitespaces)) } }
+            .filter { $0.count > 2 }
+        
+        var jobsNumbers = dataResultInts[0]
+        var jobsModules = dataResultInts[1]
+        
+        for (i, _) in jobsNumbers.enumerated() {
+            var job = jobs[jobsNumbers[i]]
+            if jobsModules[i] == 0 {
+                print("0 ")
+            } else {
+                print("\(job.modes[jobsModules[i] - 1].duration) ")
+            }
+        }
         
     } catch {
         print(error)
