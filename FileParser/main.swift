@@ -10,6 +10,33 @@ import Foundation
 
 class Job {
     var modes: [Mode] = []
+    //0 - the fastest 
+    //1 - the slowest
+    func giveWeightForModule(index: Int) -> Float {
+        
+        if modes.count == 1 { return 1 }
+        
+        let sortedModesByDurationGrowing = modes.sorted { $0.duration < $1.duration }
+        var previousDuration = -1
+        let removedModulesWithRepeatingDuration = sortedModesByDurationGrowing.filter { (mode) -> Bool in
+            if mode.duration == previousDuration {
+                previousDuration = mode.duration
+                return false
+            } else {
+                previousDuration = mode.duration
+                return true
+            }
+        }
+        
+        let multiplayer = 1.0 / Float(modes.count - 1)
+        
+        for (i, e) in removedModulesWithRepeatingDuration.enumerated() {
+            if e.duration == modes[index].duration {
+                return Float(i) * multiplayer
+            }
+        }
+        return Float(-10000000.0)
+    }
 }
 
 struct Mode {
@@ -20,13 +47,15 @@ struct Mode {
     var n2: Int
 }
 
+let folder = "/Users/mk/FileParser/j20"
+
 let fileManager = FileManager.default
-let enumerator = fileManager.enumerator(atPath: "/Users/mk/FileParser/j10")
+let enumerator = fileManager.enumerator(atPath: folder)
 
 var fileNames = [String]()
 
 while let element = enumerator?.nextObject() as? String {
-    if element.hasSuffix("mm") && element.hasPrefix("j") && element != "j10opt.mm" {
+    if element.hasSuffix("mm") && element.hasPrefix("j") && element != "j20opt.mm" {
         fileNames.append(element)
     }
 }
@@ -34,7 +63,7 @@ while let element = enumerator?.nextObject() as? String {
 var textToFile = ""
 
 for fileName in fileNames {
-    textToFile += ("\(fileName)\n" + dataForFile(file: fileName) + "\n\n")
+    textToFile += ("\(fileName)\n" + dataForFile(folderPath: folder, file: fileName) + "\n\n")
 }
 
 do {
